@@ -20,6 +20,19 @@ builder.Services.AddSwaggerGen();
 
 var key = Encoding.ASCII.GetBytes("CLAVE_SUPER_SECRETA_123");
 
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") 
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -49,6 +62,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 
