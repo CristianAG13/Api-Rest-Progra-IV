@@ -9,6 +9,7 @@ namespace WebApiProyect.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly AuthenticationService _authService = new();
+    private readonly TokenGenerator _tokenGenerator = new();
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] Usuario usuario)
@@ -18,7 +19,9 @@ public class AuthController : ControllerBase
         if (!isValid)
             return Unauthorized("Credenciales inválidas");
 
-      
-        return Ok("Login exitoso");
+        var token = _tokenGenerator.GenerateToken(usuario.Username);
+
+
+        return Ok(new { token });
     }
 }
