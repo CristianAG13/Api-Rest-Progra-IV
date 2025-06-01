@@ -5,24 +5,24 @@
 namespace WebApiProyect.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialClean : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Inventarios",
+                name: "Usuario",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<int>(type: "int", nullable: false),
-                    Cantidad = table.Column<int>(type: "int", nullable: false),
-                    Precio = table.Column<int>(type: "int", nullable: false)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Inventarios", x => x.Id);
+                    table.PrimaryKey("PK_Usuario", x => x.Id);
                 });
         }
 
@@ -30,7 +30,7 @@ namespace WebApiProyect.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Inventarios");
+                name: "Usuario");
         }
     }
 }

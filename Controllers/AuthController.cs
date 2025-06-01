@@ -1,27 +1,44 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using WebApiProyect.Models;
+using WebApiProyect.Entities;
 using WebApiProyect.Services;
-using WebApiProyect.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using WebApiProyect.Helpers;
+
 
 namespace WebApiProyect.Controllers;
 
+public record TokenResponse(string token);
+
+public record Credendials(string Email, string Password);
+
+[Authorize]
 [ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+public class AuthController : Controller
 {
-    private readonly AuthenticationService _authService = new();
-    private readonly TokenGenerator _tokenGenerator = new();
+    private readonly IAuthenticationService authenticationService;
 
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] Usuario usuario)
+    private readonly JwtSettings jwtSettings;
+
+    public AuthController(IAuthenticationService _authenticationService, JwtSettings _jwtSettings)
     {
-        bool isValid = _authService.ValidateUser(usuario.Username, usuario.Password);
-
-        if (!isValid)
-            return Unauthorized("Credenciales inválidas");
-
-        var token = _tokenGenerator.GenerateToken(usuario.Username);
-
-
-        return Ok(new { token });
+        authenticationService = _authenticationService;
+        jwtSettings = _jwtSettings;
     }
+
+    [HttpPost("/login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login(Credendials user)
+    {
+        var validuser = await authenticationService.AuthenticateAsync(user.Email, user.Password);
+        if (validuser is null)
+            return Unauthorized();
+
+
+        var token = TokenGenerator.GenerateToken(validuser, jwtSettings);
+
+        return Ok(new TokenResponse(token));
+    }
+
 }

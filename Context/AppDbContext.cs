@@ -10,6 +10,8 @@ namespace WebApiProyect.Context
 
             
         }
-        public DbSet<Inventario> Inventarios { get; set; } 
+        public DbSet<Usuario> Usuario { get; set; } 
+       
     }
 }
+
