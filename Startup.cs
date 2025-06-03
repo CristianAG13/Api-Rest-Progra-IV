@@ -35,34 +35,47 @@ namespace WebApiProyect
 
             // 3. Autenticación JWT
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
-                {
-                    options.TokenValidationParameters = new TokenValidationParameters()
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+     .AddJwtBearer(options =>
+     {
+         options.Events = new JwtBearerEvents
+         {
+             OnMessageReceived = context =>
+             {
+                 // ✅ Leer token desde cookie en vez de header
+                 if (context.Request.Cookies.TryGetValue("auth_token", out var token))
+                 {
+                     context.Token = token;
+                 }
+                 return Task.CompletedTask;
+             }
+         };
 
-                        ValidateIssuer = true,
-                        ValidIssuer = jwtSettings.Issuer,
-
-                        ValidateAudience = true,
-                        ValidAudience = jwtSettings.Audience,
-
-                        ValidateLifetime = true,
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+         options.TokenValidationParameters = new TokenValidationParameters
+         {
+             ValidateIssuerSigningKey = true,
+             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey)),
+             ValidateIssuer = true,
+             ValidIssuer = jwtSettings.Issuer,
+             ValidateAudience = true,
+             ValidAudience = jwtSettings.Audience,
+             ValidateLifetime = true,
+             ClockSkew = TimeSpan.Zero
+         };
+     });
 
             // 4. CORS para desarrollo
             services.AddCors(options =>
             {
                 options.AddPolicy("DevCors", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
+                    policy
+                        .WithOrigins("http://localhost:5173")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials(); // 👈 esto es obligatorio para cookies
                 });
             });
+
 
             // 5. Autorización (si en el futuro se agregan roles o políticas)
             services.AddAuthorization();
