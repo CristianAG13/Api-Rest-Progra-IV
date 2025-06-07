@@ -2,10 +2,12 @@
 using WebApiProyect.Context;
 using WebApiProyect.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebApiProyect.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class UsuariosAFController : ControllerBase
     {
