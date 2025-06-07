@@ -72,7 +72,7 @@ namespace WebApiProyect
                         .WithOrigins("http://localhost:5173")
                         .AllowAnyHeader()
                         .AllowAnyMethod()
-                        .AllowCredentials(); // 👈 esto es obligatorio para cookies
+                        .AllowCredentials(); //  esto es obligatorio para cookies
                 });
             });
 
@@ -82,6 +82,7 @@ namespace WebApiProyect
 
             // 6. Configuración de EF Core (usando SQL Server o lo que definas)
             var connectionString = Configuration.GetConnectionString("Connection");
+
             services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
